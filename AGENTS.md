@@ -8,9 +8,10 @@ restate them.
   *intake*; `SPEC.md` decides. (Absent until `/specify` scaffolds it from the first story.)
 
 ## Conventions (always on)
-- **[`.agents/conventions/architecture.md`](.agents/conventions/architecture.md)** —
-  the code layout: `src/barista/` package, `core/` vs `agent/` seam, one-rule-per-file,
-  test placement. Read before creating any file.
+- **[`.agents/conventions/layout.md`](.agents/conventions/layout.md)** — the code
+  layout: `src/barista/` package, `core/` vs `agent/` seam, one-rule-per-file, test
+  placement. Read before creating any file. Its machine twin
+  [`layout.env`](.agents/conventions/layout.env) feeds the hooks.
 
 ## Reference (not the contract)
 - **[`docs/PRD.md`](docs/PRD.md)** — Product Owner artifact. Background/intent only; the
