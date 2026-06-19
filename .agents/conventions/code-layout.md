@@ -3,7 +3,7 @@
 > **Why this file exists.** `/implement` carries the *method* (TDD, OO, docstrings).
 > This file carries the *layout* — where code goes — so the structure is
 > **deterministic** rather than improvised on each run. `/implement` MUST read this
-> before creating files. Its machine-readable twin, [`layout.env`](layout.env) (same
+> before creating files. Its machine-readable twin, [`code-layout.env`](code-layout.env) (same
 > directory), declares the same paths/patterns as `key=value` so the hooks can enforce
 > them — keep the two in sync. The `post-implement` hook imposes the load-bearing parts.
 
@@ -16,8 +16,8 @@ sdd-barista-agent/
 ├── AGENTS.md                # thin router → SPEC.md, this convention, the skills
 ├── .agents/
 │  └── conventions/
-│     ├── layout.md          # this file (prose, for the agent)
-│     └── layout.env         # the same invariants as key=value (for the hooks)
+│     ├── code-layout.md          # this file (prose, for the agent)
+│     └── code-layout.env         # the same invariants as key=value (for the hooks)
 ├── docs/
 │  ├── PRD.md                # Product Owner artifact — REFERENCE only, not the dev's contract
 │  └── SPEC.example.md       # illustrative: what /specify would scaffold from US1
