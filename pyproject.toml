@@ -28,5 +28,6 @@ source-roots = ["src"]
 disable = [
     "too-few-public-methods",   # rule classes are intentionally single-method
     "redefined-outer-name",     # common pattern with pytest fixtures in tests
+    "duplicate-code",           # parallel test structures and similar fixtures across rules
 ]
 

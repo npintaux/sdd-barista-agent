@@ -9,6 +9,7 @@ from barista.core.models import Order, Decision
 from barista.core.menu import Menu
 from barista.core.rules.base import Rule
 from barista.core.rules.r1_off_menu import R1OffMenu
+from barista.core.rules.r3_ask import R3Ask
 
 
 class NoMatchingRuleError(Exception):
@@ -17,11 +18,12 @@ class NoMatchingRuleError(Exception):
 
 # Ordered list of rule instances at the SPEC's precedence:
 # 1. R1 — Off-menu Refusal
-# 2. R3 — Size Clarification (Not yet implemented)
+# 2. R3 — Size Clarification
 # 3. R2 — Out-of-stock Refusal (Not yet implemented)
 # 4. R4 — Complete Order Fullfillment (Not yet implemented)
 RULES: list[Rule] = [
     R1OffMenu(),
+    R3Ask(),
 ]
 
 
