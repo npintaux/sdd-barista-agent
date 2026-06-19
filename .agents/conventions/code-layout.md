@@ -19,8 +19,7 @@ sdd-barista-agent/
 │     ├── code-layout.md          # this file (prose, for the agent)
 │     └── code-layout.env         # the same invariants as key=value (for the hooks)
 ├── docs/
-│  ├── PRD.md                # Product Owner artifact — REFERENCE only, not the dev's contract
-│  └── SPEC.example.md       # illustrative: what /specify would scaffold from US1
+│  └── PRD.md                # Product Owner artifact — REFERENCE only, not the dev's contract
 ├── src/
 │  └── barista/              # the importable package (= the built wheel)
 │     ├── __init__.py

@@ -16,8 +16,9 @@ restate them.
 ## Reference (not the contract)
 - **[`docs/PRD.md`](docs/PRD.md)** — Product Owner artifact. Background/intent only; the
   developer works from the GitHub Issue + `SPEC.md`, not from the PRD.
-- **[`docs/SPEC.example.md`](docs/SPEC.example.md)** — illustrative example of what
-  `/specify` produces for US1.
+
+The canonical `SPEC.md` *shape* lives in the plugin's `SPEC.template.md` (and is enforced
+at commit); `/specify` derives the content from the Issue — there is no example to copy.
 
 ## Workflow (skills)
 - `/specify #<n>` — Issue → proposed `SPEC.md` + tests, **STOP for approval**, then commit on `issue/<n>-<title>`.
