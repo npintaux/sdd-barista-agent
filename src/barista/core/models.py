@@ -14,6 +14,7 @@ class Order:
 
     item: str
     size: str | None = None
+    allergies: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
