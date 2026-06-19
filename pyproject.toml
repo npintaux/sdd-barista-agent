@@ -23,3 +23,10 @@ addopts = "--cov=barista --cov-report=term-missing --cov-fail-under=90"
 [tool.pylint.main]
 # missing-docstring is intentionally on: docstrings are a hard gate (see SPEC/architecture).
 source-roots = ["src"]
+
+[tool.pylint."messages control"]
+disable = [
+    "too-few-public-methods",   # rule classes are intentionally single-method
+    "redefined-outer-name",     # common pattern with pytest fixtures in tests
+]
+
