@@ -9,7 +9,7 @@ from barista.core.models import Order
 from barista.core.menu import Menu
 from barista.core.stock import Stock
 from barista.core.rules.r2_out_of_stock import R2OutOfStock
-from barista.core.engine import take_order, NoMatchingRuleError
+from barista.core.engine import take_order
 
 
 # --- Test Reference Data for R2 ---
@@ -151,13 +151,18 @@ def test_engine_r2_triggered(sample_menu: Menu, sample_stock: Stock) -> None:
 
 
 def test_engine_r2_not_triggered_when_in_stock(sample_menu: Menu, sample_stock: Stock) -> None:
-    """Engine: R2 does not trigger when item is in stock, deferring to later rules."""
+    """Engine: When item is in stock, R2 is skipped, and order completes successfully."""
     # Given
     order = Order(item="drip", size="medium")
 
-    # When / Then
-    with pytest.raises(NoMatchingRuleError, match="No rule applied to the order"):
-        take_order(order, sample_menu, sample_stock)
+    # When
+    decision = take_order(order, sample_menu, sample_stock)
+
+    # Then
+    assert decision.outcome == "MAKE"
+    assert decision.rule_ids == ["R4"]
+    assert decision.ticket == {"drink": "medium drip"}
+
 
 
 # --- Coverage-Boosting Edge Cases ---

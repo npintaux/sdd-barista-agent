@@ -8,7 +8,7 @@ import pytest
 from barista.core.models import Order
 from barista.core.menu import Menu
 from barista.core.rules.r3_ask import R3Ask
-from barista.core.engine import take_order, NoMatchingRuleError
+from barista.core.engine import take_order
 
 
 # --- Test Menu Data for R3 ---
@@ -105,10 +105,14 @@ def test_engine_r3_triggered(sample_menu: Menu) -> None:
 
 
 def test_engine_r3_not_triggered_when_size_provided(sample_menu: Menu) -> None:
-    """Engine: Defer to later rules (which raise NoMatchingRuleError) when size is provided."""
+    """Engine: When size is provided, R3 is skipped, and order completes successfully."""
     # Given
     order = Order(item="latte", size="medium")
 
-    # When / Then
-    with pytest.raises(NoMatchingRuleError, match="No rule applied to the order"):
-        take_order(order, sample_menu)
+    # When
+    decision = take_order(order, sample_menu)
+
+    # Then
+    assert decision.outcome == "MAKE"
+    assert decision.rule_ids == ["R4"]
+    assert decision.ticket == {"drink": "medium latte"}
