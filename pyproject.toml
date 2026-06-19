@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "barista"
+version = "0.1.0"
+description = "Barista Agent — a deterministic, auditable order-taking decision engine"
+requires-python = ">=3.13"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "pylint"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "--cov=barista --cov-report=term-missing --cov-fail-under=90"
+
+[tool.pylint.main]
+# missing-docstring is intentionally on: docstrings are a hard gate (see SPEC/architecture).
+source-roots = ["src"]

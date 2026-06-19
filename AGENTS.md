@@ -1,0 +1,26 @@
+# AGENTS.md — Barista Agent (router)
+
+This is a thin router. It points to the artifacts that govern work here; it does not
+restate them.
+
+## Source of truth
+- **[`SPEC.md`](SPEC.md)** — the contract the implementation obeys. GitHub Issues are
+  *intake*; `SPEC.md` decides. (Absent until `/specify` scaffolds it from the first story.)
+
+## Conventions (always on)
+- **[`.agents/conventions/architecture.md`](.agents/conventions/architecture.md)** —
+  the code layout: `src/barista/` package, `core/` vs `agent/` seam, one-rule-per-file,
+  test placement. Read before creating any file.
+
+## Reference (not the contract)
+- **[`docs/PRD.md`](docs/PRD.md)** — Product Owner artifact. Background/intent only; the
+  developer works from the GitHub Issue + `SPEC.md`, not from the PRD.
+- **[`docs/SPEC.example.md`](docs/SPEC.example.md)** — illustrative example of what
+  `/specify` produces for US1.
+
+## Workflow (skills)
+- `/specify #<n>` — Issue → proposed `SPEC.md` + tests, **STOP for approval**, then commit on `issue/<n>-<title>`.
+- `/implement R<n>` — one rule, TDD → green, **STOP for approval**. Never commits, never auto-advances.
+- `/commit` — separate, user-initiated, after approval. Conventional message `type(scope): summary [Rn] (#n)`.
+
+**One user story = one session.** No commit without explicit approval; no auto-advance to the next story.
