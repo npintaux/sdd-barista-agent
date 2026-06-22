@@ -19,7 +19,14 @@ Given an `Order` (containing the parsed drink item, size, and customer's declare
   - `outcome: str` — one of `MAKE`, `ASK`, `REFUSE`.
   - `rule_ids: list[str]` — the stable rule IDs that determined the outcome, ordered by precedence.
   - `ticket: dict | None` — the ticket (if outcome is `MAKE`), containing:
-    - `drink: str` — the name of the drink.
+    - `line_items: list[dict]` — a list of purchased drink details, where each item contains:
+      - `item: str` — the normalized name of the drink (e.g. `"oat latte"`).
+      - `size: str` — the specified size of the drink (e.g. `"medium"`).
+      - `price: float` — the computed price of the drink item.
+    - `total_price: float` — the sum of prices of all line items.
+    - `currency: str` — the three-letter currency code (e.g. `"USD"`).
+    - `policy_version: str` — the version of the ticket schema/policy format (e.g. `"1.0.0"`).
+    - `evaluated_at: str` — the ISO 8601 timestamp of evaluation (e.g. `"2026-06-22T08:37:30Z"`).
   - `question: str | None` — the clarifying question (if outcome is `ASK`).
   - `explanation: str | None` — explanation of the decision (if outcome is `REFUSE` or `MAKE`).
 
@@ -27,6 +34,9 @@ Given an `Order` (containing the parsed drink item, size, and customer's declare
 
 - Evaluation is deterministic: same `Order` + same external lookup data → same `Decision`.
 - Totality: every `Order` yields exactly one outcome.
+- **Pricing Consistency:** All prices are computed using a shared, centrally-maintained pricing source (e.g., looking up menu prices) and never hard-coded in individual rules.
+- **Ticket Schema Validation:** Any generated `ticket` (when outcome is `MAKE`) must conform to a published JSON schema; invalid payloads are rejected.
+- **Format Schema Versioning:** Any changes to the ticket format structure are governed by semantic versioning, signaled by a bumped `policy_version` and/or schema version to allow consumers to adapt.
 
 ## Rules
 
@@ -61,10 +71,25 @@ Given an `Order` (containing the parsed drink item, size, and customer's declare
 
 ### R4: Complete Order Fulfillment
 
-- **Behavior:** If the requested `item` is on the menu, in stock, and the `size` is specified, the decision must be `MAKE` with a ticket for the drink and a brief explanation.
-- **Example:** `evaluate(item="oat latte", size="medium")` → `MAKE`, `["R4"]` (ticket: `{"drink": "medium oat latte"}`)
+- **Behavior:** If the requested `item` is on the menu, in stock, and the `size` is specified, the decision must be `MAKE` with a validated, priced JSON ticket and a brief explanation.
+- **Example:** `evaluate(item="oat latte", size="medium")` → `MAKE`, `["R4"]`
+  ```json
+  ticket: {
+    "line_items": [
+      {
+        "item": "oat latte",
+        "size": "medium",
+        "price": 4.00
+      }
+    ],
+    "total_price": 4.00,
+    "currency": "USD",
+    "policy_version": "1.0.0",
+    "evaluated_at": "2026-06-22T08:37:30Z"
+  }
+  ```
 - **Precedence:** Evaluated last, deferred to R1, R5, R3, and R2.
-- **Source:** issue #1
+- **Source:** issue #1, issue #3
 
 ## Precedence order
 
@@ -78,9 +103,26 @@ Rules are evaluated as an **ordered list**; earlier entries win on conflict:
 
 ## Glossary
 
-- **menu** — external reference mapping available drink names (excluding size) to their base details/configurations (including associated `allergens` and optional `substitute`).
+- **menu** — external reference mapping available drink names (excluding size) to their base details/configurations (including associated `allergens`, optional `substitute`, and pricing).
 - **stock** — external reference tracking the availability of ingredients or specific drink/size combinations.
-- **ticket** — a structured representation of a fulfilled drink order, including the resolved drink name.
+- **ticket** — a structured, validated JSON representation of a fulfilled drink order, containing line items, total price, currency, plus evaluation/audit fields.
 - **size** — the volume specification of the drink (e.g., small, medium, large).
 - **allergies** — list of customer's declared allergies passed as part of the order profile.
 - **allergens** — specific ingredients/substances in menu items (e.g., nut, dairy) that can cause allergic reactions.
+- **pricing source** — the price catalog maintained by the **Shop Manager** (via the Store Catalog Service) and passed to the engine as part of the external `Menu` reference data. It is implemented as a sub-dictionary under each menu item mapping size keys to their respective prices.
+  * *Example:*
+    ```json
+    {
+      "items": {
+        "latte": {
+          "allergens": ["dairy"],
+          "substitute": "oat latte",
+          "prices": {
+            "small": 3.00,
+            "medium": 3.50,
+            "large": 4.00
+          }
+        }
+      }
+    }
+    ```
