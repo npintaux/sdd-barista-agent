@@ -7,6 +7,8 @@
 
 Given an `Order` (containing the parsed drink item, size, and customer's declared allergies), the engine returns a `Decision` (an `outcome` plus the `rule_ids` that fired), evaluating rules in precedence order against external lookup reference data for the menu and current ingredient stock.
 
+An **Agent Shell** wraps this pure, deterministic engine. The shell is responsible for user interaction, natural language parsing, and non-deterministic I/O tasks, such as resolving best-effort visual previews of the prepared drinks.
+
 ## Domain model
 
 - **Order** — the input. The customer's words and profile are parsed into a structured order by the
@@ -29,6 +31,11 @@ Given an `Order` (containing the parsed drink item, size, and customer's declare
     - `evaluated_at: str` — the ISO 8601 timestamp of evaluation (e.g. `"2026-06-22T08:37:30Z"`).
   - `question: str | None` — the clarifying question (if outcome is `ASK`).
   - `explanation: str | None` — explanation of the decision (if outcome is `REFUSE` or `MAKE`).
+- **AgentResponse** — the final customer-facing output returned by the agent shell. Fields:
+  - `decision: Decision` — the deterministic decision evaluated by the core engine.
+  - `preview: dict | None` — the visual preview metadata of the drink. `None` if the outcome is not `MAKE` or if a preview cannot be found. If present, it contains:
+    - `image_path: str` — the path or URI to the illustrative PNG image file.
+    - `alt_text: str` — a descriptive alt-text string summarizing the visual appearance of the drink.
 
 ## Global constraints
 
@@ -37,6 +44,9 @@ Given an `Order` (containing the parsed drink item, size, and customer's declare
 - **Pricing Consistency:** All prices are computed using a shared, centrally-maintained pricing source (e.g., looking up menu prices) and never hard-coded in individual rules.
 - **Ticket Schema Validation:** Any generated `ticket` (when outcome is `MAKE`) must conform to a published JSON schema; invalid payloads are rejected.
 - **Format Schema Versioning:** Any changes to the ticket format structure are governed by semantic versioning, signaled by a bumped `policy_version` and/or schema version to allow consumers to adapt.
+- **Visual Preview Isolation:** Visual preview resolution is managed completely within the non-deterministic `agent` shell and is kept completely isolated from the pure deterministic core decision engine rules.
+- **Best-Effort Preview:** Drink previews are resolved on a best-effort basis. The agent shell checks local asset directories for pre-generated images. These assets can be pre-generated or dynamically generated/cached using Google's Gemini Flash Image model (affectionately nicknamed "Nano Banana") via the Google GenAI SDK. If no image can be found or generated, the preview must be `None` and the order must still complete successfully (never blocking the critical order path).
+- **Preview Exclusivity:** A visual preview can only be shown for successful `MAKE` decisions. Previews must be strictly `None` for `ASK` or `REFUSE` decisions.
 
 ## Rules
 
@@ -126,3 +136,5 @@ Rules are evaluated as an **ordered list**; earlier entries win on conflict:
       }
     }
     ```
+- **agent shell** — the container wrapper surrounding the decision core that handles parsing, I/O integrations, and non-deterministic features.
+- **visual preview** — an illustrative image (PNG with descriptive alt-text) showing how the made drink looks. These are resolved on a best-effort basis by the agent shell, which either pulls from a local cache of pre-generated assets or generates them on-demand using Google's Gemini Flash Image ("Nano Banana") model series.
