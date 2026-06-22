@@ -115,4 +115,9 @@ def test_engine_r3_not_triggered_when_size_provided(sample_menu: Menu) -> None:
     # Then
     assert decision.outcome == "MAKE"
     assert decision.rule_ids == ["R4"]
-    assert decision.ticket == {"drink": "medium latte"}
+    assert decision.ticket is not None
+    assert decision.ticket["line_items"] == [{"item": "latte", "size": "medium", "price": 3.50}]
+    assert decision.ticket["total_price"] == 3.50
+    assert decision.ticket["currency"] == "USD"
+    assert decision.ticket["policy_version"] == "1.0.0"
+    assert "evaluated_at" in decision.ticket

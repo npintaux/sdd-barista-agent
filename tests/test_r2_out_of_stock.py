@@ -161,7 +161,12 @@ def test_engine_r2_not_triggered_when_in_stock(sample_menu: Menu, sample_stock: 
     # Then
     assert decision.outcome == "MAKE"
     assert decision.rule_ids == ["R4"]
-    assert decision.ticket == {"drink": "medium drip"}
+    assert decision.ticket is not None
+    assert decision.ticket["line_items"] == [{"item": "drip", "size": "medium", "price": 2.00}]
+    assert decision.ticket["total_price"] == 2.00
+    assert decision.ticket["currency"] == "USD"
+    assert decision.ticket["policy_version"] == "1.0.0"
+    assert "evaluated_at" in decision.ticket
 
 
 

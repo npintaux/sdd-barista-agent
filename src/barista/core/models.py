@@ -1,6 +1,7 @@
 """Domain models for the Barista decision engine."""
 
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,6 @@ class Decision:
 
     outcome: str
     rule_ids: list[str] = field(default_factory=list)
-    ticket: dict[str, str] | None = None
+    ticket: dict[str, Any] | None = None
     question: str | None = None
     explanation: str | None = None
