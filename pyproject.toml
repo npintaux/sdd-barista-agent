@@ -29,5 +29,9 @@ disable = [
     "too-few-public-methods",   # rule classes are intentionally single-method
     "redefined-outer-name",     # common pattern with pytest fixtures in tests
     "duplicate-code",           # parallel test structures and similar fixtures across rules
+    "too-many-arguments",       # Agent shell entrypoint takes multiple parameters (e.g. assets_dir, api_client, model_name)
+    "too-many-positional-arguments", # Allowed for shell/I/O endpoints wrapping multiple features
+    "broad-exception-caught",   # Best-effort I/O operations (mkdir, API calls) must never crash the deterministic order flow
 ]
+
 
